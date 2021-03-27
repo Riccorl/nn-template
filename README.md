@@ -1,22 +1,23 @@
 # NN Template
 
 <p align="center">
-    <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-orange?logo=pytorch"></a>
-    <a href="https://pytorchlightning.ai/"><img alt="Lightning" src="https://img.shields.io/badge/-Lightning-blueviolet"></a>
+    <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch-red?logo=pytorch&labelColor=gray"></a>
+    <a href="https://pytorchlightning.ai/"><img alt="Lightning" src="https://img.shields.io/badge/code-Lightning-blueviolet"></a>
     <a href="https://hydra.cc/"><img alt="Conf: hydra" src="https://img.shields.io/badge/conf-hydra-blue"></a>
     <a href="https://wandb.ai/site"><img alt="Logging: wandb" src="https://img.shields.io/badge/logging-wandb-yellow"></a>
     <a href="https://dvc.org/"><img alt="Conf: hydra" src="https://img.shields.io/badge/data-dvc-9cf"></a>
+    <a href="https://streamlit.io/"><img alt="UI: streamlit" src="https://img.shields.io/badge/ui-streamlit-orange"></a>
     <a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
 
-Generic template to bootstrap your [PyTorch](https://pytorch.org/get-started/locally/) project. Click on [<kbd>Use this Template</kbd>](https://github.com/lucmos/nn-template/generate) and avoid writing boilerplate code for:
+Generic template to bootstrap your [PyTorch](https://pytorch.org/get-started/locally/) project. Click on [![](https://img.shields.io/badge/-Use_this_template-success?style=flat)](https://github.com/lucmos/nn-template/generate) and avoid writing boilerplate code for:
 
 - [PyTorch Lightning](https://github.com/PyTorchLightning/pytorch-lightning), lightweight PyTorch wrapper for high-performance AI research.
 - [Hydra](https://github.com/facebookresearch/hydra), a framework for elegantly configuring complex applications.
 - [DVC](https://dvc.org/doc/start/data-versioning), track large files, directories, or ML models. Think "Git for data".
 - [Weights and Biases](https://wandb.ai/home), organize and analyze machine learning experiments. *(educational account available)*
-
+- [Streamlit](https://streamlit.io/), turns data scripts into shareable web apps in minutes.
 
 *`nn-template`* is opinionated so you don't have to be.
 If you use this template, please add
@@ -32,23 +33,44 @@ Checkout the [`mwe` branch](https://github.com/lucmos/nn-template/tree/mwe) to v
 
 ```bash
 .
-├── conf                # Hydra compositional config
-│   ├── default.yaml    # current experiment configuration
+├── .cache              
+├── conf                # hydra compositional config 
 │   ├── data
+│   ├── default.yaml    # current experiment configuration        
 │   ├── hydra
 │   ├── logging
 │   ├── model
 │   ├── optim
 │   └── train
 ├── data                # datasets
-├── experiments         # local logs
-├── README.md
+├── .env                # system-specific env variables, e.g. PROJECT_ROOT
 ├── requirements.txt    # basic requirements
-└── src
-    ├── common          # common Python modules
-    ├── pl_data         # PyTorch Lightning datamodules and datasets
-    ├── pl_modules      # PyTorch Lightning modules
-    └── run.py          # entry point to run current conf
+├── src
+│   ├── common          # common modules and utilities
+│   ├── pl_data         # PyTorch Lightning datamodules and datasets
+│   ├── pl_modules      # PyTorch Lightning modules
+│   ├── run.py          # entry point to run current conf
+│   └── ui              # interactive streamlit apps
+└── wandb               # local experiments (auto-generated)
+```
+
+# Streamlit
+[Streamlit](https://docs.streamlit.io/) is an open-source Python library that makes
+it easy to create and share beautiful, custom web apps for machine learning and data science.
+
+In just a few minutes, you can build and deploy powerful data apps to:
+
+- **Explore** your data
+- **Interact** with your model
+- **Analyze** your model behavior and input sensitivity
+- **Showcase** your prototype with [awesome web apps](https://streamlit.io/gallery)
+
+Moreover, Streamlit enables interactive development with automatic rerun on files changes.
+
+Launch a minimal app that allows a model restore from a local or remote checkpoint with:
+
+```bash
+PYTHONPATH=. streamlit run src/ui/run.py
 ```
 
 # Data Version Control
@@ -114,8 +136,8 @@ Configure the logging in `conf/logging/*`.
 
 Read more in the [docs](https://docs.wandb.ai/). Particularly useful the [`log` method](https://docs.wandb.ai/library/log), accessible from inside a PyTorch Lightning module with `self.logger.experiment.log`.
 
-> W&B is our logger of choice, but that is a purely subjective decision. Since we are using Lightning, you can replace 
-`wandb` with the logger you prefer (you can even build your own). 
+> W&B is our logger of choice, but that is a purely subjective decision. Since we are using Lightning, you can replace
+`wandb` with the logger you prefer (you can even build your own).
  More about Lightning loggers [here](https://pytorch-lightning.readthedocs.io/en/latest/extensions/logging.html).
 
 # Hydra
@@ -174,5 +196,5 @@ get_env('MY_VAR')
 and in the Hydra `.yaml` configuration files with:
 
 ```yaml
-${env:MY_VAR}
+${oc.env:MY_VAR}
 ```

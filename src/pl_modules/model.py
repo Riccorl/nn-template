@@ -1,17 +1,18 @@
 from typing import Any, Dict, Sequence, Tuple, Union
 
 import hydra
+import omegaconf
 import pytorch_lightning as pl
 import torch
 from omegaconf import DictConfig
 from torch.optim import Optimizer
 
+from src.common.utils import PROJECT_ROOT
 
 class MyModel(pl.LightningModule):
-    def __init__(self, cfg: DictConfig, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.cfg = cfg
-        self.save_hyperparameters(cfg)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__()
+        self.save_hyperparameters()
 
     def forward(self, **kwargs) -> Dict[str, torch.Tensor]:
         """
@@ -70,13 +71,25 @@ class MyModel(pl.LightningModule):
             - None - Fit will run without any optimizer.
         """
         opt = hydra.utils.instantiate(
-            self.cfg.optim.optimizer, params=self.parameters()
+            self.hparams.optim.optimizer, params=self.parameters(), _convert_="partial"
         )
+        scheduler = hydra.utils.instantiate(
+            self.hparams.optim.lr_scheduler, optimizer=opt
+        )
+        return [opt], [scheduler]
 
-        if self.cfg.optim.use_lr_scheduler:
-            scheduler = hydra.utils.instantiate(
-                self.cfg.optim.lr_scheduler, optimizer=opt
-            )
-            return [opt], [scheduler]
 
-        return opt
+
+@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
+def main(cfg: omegaconf.DictConfig):
+    model: pl.LightningModule = hydra.utils.instantiate(
+        cfg.model,
+        optim=cfg.optim,
+        data=cfg.data,
+        logging=cfg.logging,
+        _recursive_=False,
+    )
+
+
+if __name__ == "__main__":
+    main()
